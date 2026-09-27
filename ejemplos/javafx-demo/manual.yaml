@@ -1,0 +1,18 @@
+titulo: Manual de usuario
+subtitulo: Sistema de escritorio
+cliente: Distribuidora (demo)
+archivo: manual-escritorio-demo
+secciones:
+  - id: registrar-entrada
+    titulo: Registrar una entrada de mercancía
+    intro: Úsalo cada vez que llegue mercancía de un proveedor.
+    pasos:
+      - texto: En el menú de la izquierda, da clic en **Inventario**.
+        captura: true
+      - texto: Da clic en **Nueva entrada**.
+        captura: true
+      - texto: Elige el producto ① y escribe la cantidad ②.
+        captura: {ancho: 4.5}
+        importante: La cantidad se captura en **piezas**, no en cajas.
+      - texto: Si necesitas cambiar el producto, abre la lista y elige otro.
+        captura: true

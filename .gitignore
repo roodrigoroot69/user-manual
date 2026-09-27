@@ -1,0 +1,18 @@
+# salidas
+build/
+dist/
+out/
+**/crudas/
+**/capturas/
+capturas.json
+*.docx
+*.pdf
+login-fallido.png
+# ejemplos: el helper se copia al correr
+ejemplos/javafx-demo/src/manual/ManualCapturador.java
+# sistema
+__pycache__/
+*.pyc
+.DS_Store
+.venv/
+.idea/
