@@ -1,0 +1,52 @@
+title: User manual
+subtitle: Inventory System
+client: Distributor (demo)
+version: "0.1"
+filename: web-demo-manual
+language: en
+base_url: ${DEMO_URL}
+viewport: {width: 1280, height: 720}
+login:
+  url: /login.html
+  actions:
+    - fill: {selector: "#id_username", value: "${MANUAL_USER}"}
+    - fill: {selector: "#id_password", value: "${MANUAL_PASS}"}
+    - click: "button[type=submit]"
+  wait: "nav"
+redact: ["#user-email"]
+introduction: |
+  This manual explains how to use the inventory system.
+
+  Each section describes a complete task, step by step.
+sections:
+  - id: record-stock-entry
+    title: Record a stock entry
+    intro: Use this every time a supplier delivers goods.
+    steps:
+      - text: After logging in you'll see the **Home** screen. In the side menu, click **Inventory**.
+        capture:
+          highlight: ["#menu-inventory"]
+      - actions: [{click: "#menu-inventory"}]
+        text: You'll see the product list with current stock. Click **New entry**.
+        capture:
+          highlight: ["text=New entry"]
+      - actions:
+          - click: "text=New entry"
+          - wait: "form#entry"
+          - select: {selector: "#id_product", value: "Rice 1kg"}
+          - fill: {selector: "#id_quantity", value: "48"}
+        text: Pick the product ① and type the quantity ②.
+        capture:
+          highlight: ["#id_product", "#id_quantity"]
+          crop: {selector: "form#entry", margin: 4}
+          width: 4.5
+        important: Quantities are entered in **pieces**, not boxes.
+      - actions:
+          - click: "text=Save"
+          - wait: ".alert-success"
+        text: Click **Save**. A green confirmation message will appear.
+        capture:
+          highlight: [{selector: ".alert-success", label: false}]
+        note: Stock is updated immediately.
+    troubleshooting:
+      - "If the product isn't in the list, add it first in **Catalog**."

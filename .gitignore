@@ -1,16 +1,16 @@
-# salidas
+# outputs
 build/
 dist/
 out/
-**/crudas/
-**/capturas/
-capturas.json
+**/raw/
+**/screenshots/
+screenshots.json
 *.docx
 *.pdf
-login-fallido.png
-# ejemplos: el helper se copia al correr
-ejemplos/javafx-demo/src/manual/ManualCapturador.java
-# sistema
+login-failed.png
+# examples: the helper is copied in at run time
+examples/javafx-demo/src/manual/ManualCapturer.java
+# system
 __pycache__/
 *.pyc
 .DS_Store

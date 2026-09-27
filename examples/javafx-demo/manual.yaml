@@ -1,0 +1,20 @@
+# Example of a manual written in Spanish (language: es) for a Spanish-speaking client.
+title: Manual de usuario
+subtitle: Sistema de escritorio
+client: Distribuidora (demo)
+filename: javafx-demo-manual
+language: es
+sections:
+  - id: registrar-entrada
+    title: Registrar una entrada de mercancía
+    intro: Úsalo cada vez que llegue mercancía de un proveedor.
+    steps:
+      - text: En el menú de la izquierda, da clic en **Inventario**.
+        capture: true
+      - text: Da clic en **Nueva entrada**.
+        capture: true
+      - text: Elige el producto ① y escribe la cantidad ②.
+        capture: {width: 4.5}
+        important: La cantidad se captura en **piezas**, no en cajas.
+      - text: Si necesitas cambiar el producto, abre la lista y elige otro.
+        capture: true

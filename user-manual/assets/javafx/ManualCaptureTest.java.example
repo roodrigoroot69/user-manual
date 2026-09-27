@@ -1,0 +1,64 @@
+// Example: adapt the package, main class, ids and how the app is pointed at the demo database.
+package manual;
+
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.testfx.api.FxRobot;
+import org.testfx.framework.junit5.ApplicationExtension;
+import org.testfx.framework.junit5.Start;
+import org.testfx.util.WaitForAsyncUtils;
+
+import javafx.stage.Stage;
+import java.nio.file.*;
+
+@Tag("manual")
+@ExtendWith(ApplicationExtension.class)
+class ManualCaptureTest {
+
+    static final Path OUTPUT = Path.of(System.getProperty("manual.output", "build/manual/raw"));
+    static final ManualCapturer cap = new ManualCapturer(OUTPUT, 2)
+            .alwaysRedact("#lblCurrentUser");   // user details in the top bar
+
+    Stage stage;
+
+    @Start
+    void start(Stage stage) throws Exception {
+        // Clean demo database for every section
+        Path demo = Path.of("build/manual/demo.db");
+        Files.createDirectories(demo.getParent());
+        Files.copy(Path.of("src/test/resources/manual/demo.db"), demo, StandardCopyOption.REPLACE_EXISTING);
+        System.setProperty("app.db", demo.toString());
+        System.setProperty("app.mode", "demo");       // no sync, no automatic backups
+
+        new com.example.App().start(stage);           // your main class
+        stage.setWidth(1366);
+        stage.setHeight(768);
+        this.stage = stage;
+    }
+
+    private void settle() { WaitForAsyncUtils.waitForFxEvents(); }
+
+    @Test
+    void recordStockEntry(FxRobot robot) {
+        settle();
+        cap.capture(stage, "record-stock-entry-01").highlight("#menuInventory").save();
+
+        robot.clickOn("#menuInventory"); settle();
+        cap.capture(stage, "record-stock-entry-02").highlight("#btnNewEntry").save();
+
+        robot.clickOn("#btnNewEntry"); settle();
+        robot.clickOn("#cmbProduct"); settle();
+        cap.capture(stage, "record-stock-entry-03").screen()   // open list = popup window
+                .highlight("#cmbProduct").save();
+
+        robot.clickOn("Rice 1kg");
+        robot.clickOn("#txtQuantity").write("48"); settle();
+        cap.capture(stage, "record-stock-entry-04")
+                .highlight("#cmbProduct").highlight("#txtQuantity")
+                .crop("#entryForm", 16).save();
+
+        robot.clickOn("#btnSave"); settle();
+        cap.capture(stage, "record-stock-entry-05").highlight("#lblConfirmation", null).save();
+    }
+}

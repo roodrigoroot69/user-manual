@@ -1,57 +1,57 @@
-# manual-usuario — skill para generar manuales de usuario
+# user-manual — a Claude skill for generating end-user manuals
 
-Skill de Claude que genera manuales de usuario para clientes finales a partir de la aplicación real: recorre los flujos, toma capturas, las anota (recuadros numerados, datos difuminados, recortes) y arma un Word/PDF con pasos en lenguaje sencillo.
+A Claude skill that builds end-user manuals from the real application: it walks through the app's flows, takes screenshots, annotates them (numbered highlight boxes, blurred sensitive data, crops) and assembles a Word/PDF document with plain-language steps, in English or Spanish.
 
-## Plataformas
+## Platforms
 
-| Plataforma | Driver | Se regenera solo | Estado |
+| Platform | Driver | Regenerates by itself | Status |
 |---|---|---|---|
-| Web (Django, Next.js, HTML estático…) | Playwright | Sí | Probado |
-| Escritorio JavaFX | TestFX + `ManualCapturador.java` | Sí | Helper probado; la prueba con TestFX falta validarla en un proyecto real |
-| Flutter (tablet, móvil) | `integration_test` + `manual_capturador.dart` | Sí | Sin probar |
-| Android/iOS nativo, React Native, .NET, Swing, otras | Modo manual (cuadrícula / `adb`) | No | Probado |
+| Web (Django, Next.js, static HTML…) | Playwright | Yes | Tested |
+| JavaFX desktop | TestFX + `ManualCapturer.java` | Yes | Helper tested; the TestFX harness still needs validation in a real project |
+| Flutter (tablet, mobile) | `integration_test` + `manual_capturer.dart` | Yes | Untested |
+| Native Android/iOS, React Native, Electron, .NET, Swing, others | Manual mode (grid / `adb`) | No | Tested |
 
-Pendientes a futuro: soporte de Electron en `capture_web.py` (Playwright lo permite) y un driver Appium para plataformas nativas.
+Future work: Electron support in `capture_web.py` (Playwright supports it) and an Appium driver for native platforms.
 
-## Estructura
+## Layout
 
 ```
-manual-usuario/          la skill (lo que se instala)
-  SKILL.md               flujo: contexto → plataforma → datos demo → YAML → captura → revisión → documento
-  references/            una guía por driver + contexto del repo + formato de manual.yaml
+user-manual/             the skill (what gets installed)
+  SKILL.md               flow: context → platform → demo data → YAML → capture → review → document
+  references/            one guide per driver + repo context + manual.yaml format
   scripts/               detect_platform, capture_web, annotate, build_manual, grid, android_bounds
-  assets/javafx|flutter  helpers y pruebas de ejemplo para copiar al proyecto
-ejemplos/
-  web-demo/              app HTML de prueba + manual.yaml + correr.sh
-  javafx-demo/           app JavaFX de prueba + arnés + manual.yaml + correr.sh
-empaquetar.sh            genera dist/manual-usuario.skill
+  assets/javafx|flutter  helpers and example tests to copy into the project
+examples/
+  web-demo/              demo HTML app + manual.yaml (English) + run.sh
+  javafx-demo/           demo JavaFX app + harness + manual.yaml (Spanish) + run.sh
+package.sh               builds dist/user-manual.skill
 ```
 
-## Instalar
+## Install
 
-**Claude Code** (personal, en todos los proyectos):
+**Claude Code** (personal, all projects):
 ```bash
-ln -s "$(pwd)/manual-usuario" ~/.claude/skills/manual-usuario
+ln -s "$(pwd)/user-manual" ~/.claude/skills/user-manual
 ```
-Con enlace simbólico, los cambios en el repo se reflejan al instante. Para un solo proyecto, cópiala a `<proyecto>/.claude/skills/`.
+With a symlink, changes in the repo apply immediately. For a single project, copy it into `<project>/.claude/skills/`.
 
-**claude.ai:** `./empaquetar.sh` y sube `dist/manual-usuario.skill` en Ajustes → Capacidades.
+**claude.ai:** run `./package.sh` and upload `dist/user-manual.skill` under Settings → Capabilities.
 
-## Dependencias (en la máquina donde se genera el manual)
+## Dependencies (on the machine that generates the manual)
 
 ```bash
-pip install pyyaml pillow python-docx          # siempre
-pip install playwright && python -m playwright install chromium   # driver web
-brew install --cask libreoffice                # opcional, para PDF
+pip install pyyaml pillow python-docx                              # always
+pip install playwright && python -m playwright install chromium    # web driver
+brew install --cask libreoffice                                    # optional, for PDF
 ```
 
-## Uso
+## Usage
 
-En Claude Code, dentro del proyecto: *"Hazme el manual de usuario del módulo de inventario"*. La skill revisa el contexto del repo (CLAUDE.md, OpenSpec, docs), detecta la plataforma, propone las secciones y, tras confirmarlas, captura y genera el documento.
+In Claude Code, inside the project: *"Make the user manual for the inventory module"*. The skill reads the repo's context (CLAUDE.md, OpenSpec, docs), detects the platform, proposes the sections and, once confirmed, captures and builds the document. Manual texts are written in the end user's language (`language: en | es` in `manual.yaml`).
 
-## Probar los ejemplos
+## Try the examples
 
 ```bash
-./ejemplos/web-demo/correr.sh
-FX=/ruta/javafx-sdk/lib ./ejemplos/javafx-demo/correr.sh
+./examples/web-demo/run.sh
+FX=/path/to/javafx-sdk/lib ./examples/javafx-demo/run.sh
 ```

@@ -1,0 +1,45 @@
+// Example: integration_test/manual_test.dart — adapt the app's main, keys and texts.
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:integration_test/integration_test.dart';
+
+import 'package:route_app/main.dart' as app;
+import 'manual/manual_capturer.dart';
+
+void main() {
+  final binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+  final cap = ManualCapturer(binding, alwaysRedact: [find.byKey(const ValueKey('lblSalesRep'))]);
+
+  testWidgets('take-order', (tester) async {
+    // The app must start in demo mode (clean local DB, no real printer).
+    // See references/flutter.md → "Demo data".
+    app.main();
+    await tester.pumpAndSettle();
+
+    await cap.capture(tester, 'take-order-01')
+        .highlight(find.byKey(const ValueKey('btnNewOrder')))
+        .save();
+
+    await tester.tap(find.byKey(const ValueKey('btnNewOrder')));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Corner Grocery'));
+    await tester.pumpAndSettle();
+    await cap.capture(tester, 'take-order-02')
+        .highlight(find.text('Corner Grocery'))
+        .save();
+
+    await tester.enterText(find.byKey(const ValueKey('txtSearchProduct')), 'rice');
+    await tester.pumpAndSettle();
+    await cap.capture(tester, 'take-order-03')
+        .highlight(find.byKey(const ValueKey('txtSearchProduct')))
+        .highlight(find.text('Rice 1kg').first)
+        .save();
+
+    await tester.tap(find.byKey(const ValueKey('btnConfirmOrder')));
+    await tester.pumpAndSettle();
+    await cap.capture(tester, 'take-order-04')
+        .highlight(find.byType(SnackBar), number: false)
+        .save();
+  });
+}
